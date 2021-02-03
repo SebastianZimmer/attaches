@@ -84,6 +84,7 @@ export default class AttachesTool {
       errorMessage: config.errorMessage || 'File upload failed',
       additionalRequestHeaders: config.additionalRequestHeaders || {},
       uploader: config.uploader || undefined,
+      onDownload: config.onDownload || undefined,
     };
 
     this.data = data;
@@ -350,10 +351,17 @@ export default class AttachesTool {
 
     const downloadIcon = this.make('a', this.CSS.downloadButton, {
       innerHTML: DownloadIcon,
-      href: url,
-      target: '_blank',
-      rel: 'nofollow noindex noreferrer',
     });
+
+    if (typeof this.config.onDownload === 'function') {
+      downloadIcon.addEventListener('click', () => {
+        this.config.onDownload(this.data.file);
+      });
+    } else {
+      downloadIcon.href = url;
+      downloadIcon.target = '_blank';
+      downloadIcon.rel = 'nofollow noindex noreferrer';
+    }
 
     this.nodes.wrapper.appendChild(downloadIcon);
   }
